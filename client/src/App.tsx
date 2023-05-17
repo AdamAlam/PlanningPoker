@@ -18,13 +18,18 @@ const App = () => {
   }, [socket]);
 
   const [selectedPoints, setSelectedPoints] = useState<number | string>(0);
+  const [pointsShown, setPointsShown] = useState<boolean>(false);
 
   return (
     <div>
       <EstimationCards changeValue={setSelectedPoints} />
       <UserTable
+        pointsShown={pointsShown}
         userData={[...users, { name: "dynamic", points: selectedPoints }]}
       />
+      <Button onClick={() => setPointsShown(!pointsShown)}>
+        {pointsShown ? "Hide Points" : "Show Points"}
+      </Button>
       <Button onClick={sendMessage}>Send Hello</Button>
     </div>
   );

@@ -1,14 +1,4 @@
-import {
-  Box,
-  Button,
-  Card,
-  CardBody,
-  CardFooter,
-  CardHeader,
-  Heading,
-  SimpleGrid,
-  Text,
-} from "@chakra-ui/react";
+import { Card, CardBody, SimpleGrid, Text } from "@chakra-ui/react";
 
 import "./EstimationCards.css";
 
