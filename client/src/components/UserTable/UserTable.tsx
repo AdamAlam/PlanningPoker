@@ -27,7 +27,7 @@ const UserTable = ({ userData, pointsShown = false }: UserTableProps) => (
       <Tbody>
         {userData &&
           userData.map((user) => (
-            <Tr>
+            <Tr key={user.name}>
               <Td>{user.name}</Td>
               <Td>{pointsShown ? user.points || "Unsubmitted" : "🤫"}</Td>
             </Tr>

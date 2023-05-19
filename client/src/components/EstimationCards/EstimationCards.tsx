@@ -15,7 +15,11 @@ const EstimationCards = ({ changeValue }: Props) => {
       templateColumns={"repeat(auto-fill, minmax(200px, 1fr))"}
     >
       {possibleValues.map((value) => (
-        <Card onClick={() => changeValue(value)} className={"point-card"}>
+        <Card
+          onClick={() => changeValue(value)}
+          className={"point-card"}
+          key={value}
+        >
           <CardBody textAlign={"center"}>
             <Text fontSize={"6xl"}>{value}</Text>
           </CardBody>
