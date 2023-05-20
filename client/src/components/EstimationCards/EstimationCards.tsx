@@ -12,7 +12,7 @@ const EstimationCards = ({ changeValue }: Props) => {
   return (
     <SimpleGrid
       spacing={4}
-      templateColumns={"repeat(auto-fill, minmax(200px, 1fr))"}
+      templateColumns={"repeat(auto-fill, minmax(10vw, 1fr))"}
     >
       {possibleValues.map((value) => (
         <Card
@@ -21,7 +21,7 @@ const EstimationCards = ({ changeValue }: Props) => {
           key={value}
         >
           <CardBody textAlign={"center"}>
-            <Text fontSize={"6xl"}>{value}</Text>
+            <Text fontSize={"4xl"}>{value}</Text>
           </CardBody>
         </Card>
       ))}

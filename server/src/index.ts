@@ -64,6 +64,11 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("change_all_points_visibility", data);
   });
 
+  socket.on("change_display_name", (newName) => {
+    usersMap[socket.id]["name"] = newName;
+    emitUserData(socket);
+  });
+
   socket.on("clear_points", () => {
     Object.keys(usersMap).forEach(
       (key) => (usersMap[key]["points"] = undefined)

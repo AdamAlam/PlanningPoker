@@ -49,11 +49,17 @@ const PieChart = ({ userData }: Props) => {
     ],
   };
 
-  return Object.keys(pointsFrequency).length > 0 ? (
-    <Pie data={data} />
-  ) : (
-    // TODO: Add some kind of animation here when no one has selected any data.
-    <Text fontSize={"4xl"}>Awaiting Data...</Text>
+  return (
+    <>
+      {Object.keys(pointsFrequency).length > 0 ? (
+        <Pie data={data} />
+      ) : (
+        // TODO: Add some kind of animation here when no one has selected any data.
+        <Text fontSize={"4xl"} m={"0 auto"} textAlign={"center"}>
+          Awaiting Data...
+        </Text>
+      )}
+    </>
   );
 };
 export default PieChart;

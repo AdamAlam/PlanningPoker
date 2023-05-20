@@ -1,4 +1,5 @@
 import {
+  Spinner,
   Table,
   TableContainer,
   Tbody,
@@ -29,7 +30,9 @@ const UserTable = ({ userData, pointsShown = false }: UserTableProps) => (
           userData.map((user) => (
             <Tr key={user.name}>
               <Td>{user.name}</Td>
-              <Td>{pointsShown ? user.points || "☕️" : "🤫"}</Td>
+              <Td>
+                {pointsShown ? user.points || <Spinner size={"sm"} /> : "🤫"}
+              </Td>
             </Tr>
           ))}
       </Tbody>

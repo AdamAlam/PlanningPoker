@@ -1,10 +1,19 @@
-import { Box, Button, Input, useToast, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Input,
+  SlideFade,
+  Text,
+  useToast,
+} from "@chakra-ui/react";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Socket, io } from "socket.io-client";
 import "./App.css";
 import EstimationCards from "./components/EstimationCards/EstimationCards";
-import UserTable from "./components/UserTable/UserTable";
+import Footer from "./components/Footer/Footer";
+import NameChangeModal from "./components/NameChangeModal/NameChangeModal";
 import PieChart from "./components/PieChart/PieChart";
+import UserTable from "./components/UserTable/UserTable";
 
 const App = () => {
   const socketRef = useRef<Socket | null>(null);
@@ -19,6 +28,7 @@ const App = () => {
       points?: string | number;
     }[]
   >([]);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     socketRef.current = io("http://localhost:8080");
@@ -78,6 +88,14 @@ const App = () => {
     };
   }, []);
 
+  const changeDisplayName = (newName: string) => {
+    if (socketRef.current) {
+      socketRef.current.emit("change_display_name", newName);
+      document.title = `Planning Poker - ${newName}`;
+      sessionStorage.setItem("userName", newName);
+    }
+  };
+
   const clearPoints = () => {
     if (socketRef.current) {
       socketRef.current.emit("clear_points");
@@ -123,26 +141,58 @@ const App = () => {
           alignItems="center"
           justifyContent={"center"}
           height={"100vh"}
+          width="70%"
+          mx={"auto"}
         >
-          <Text fontSize="5xl">Welcome {userName}!</Text>
-          {pointsShown && (
-            <Box w="30%" m={"0 auto"} p={10}>
-              <PieChart userData={userData} />
+          <Box
+            display={"flex"}
+            justifyContent={"space-between"}
+            alignItems="center"
+          >
+            <Text fontSize="5xl">Welcome, {userName}!</Text>
+            <Button onClick={() => setModalOpen(true)}>
+              Edit Display Name
+            </Button>
+          </Box>
+
+          <NameChangeModal
+            modalIsOpen={modalOpen}
+            setModalClose={setModalOpen}
+            sendNewName={setUserName}
+            emitData={changeDisplayName}
+          />
+          <SlideFade in={pointsShown}>
+            <Box
+              minWidth="20vw"
+              w={"20%"}
+              h={"20%"}
+              mx={"auto"}
+              p={8}
+              minH={"20vh"}
+            >
+              {/* <SlideFade in={pointsShown}> */}
+              {pointsShown && <PieChart userData={userData} />}
+              {/* </SlideFade> */}
             </Box>
-          )}
+          </SlideFade>
           <EstimationCards changeValue={setSelectedPoints} />
 
           <UserTable pointsShown={pointsShown} userData={userData} />
-          <Button
-            onClick={() => {
-              const newVal = !pointsShown;
-              setPointsShown(newVal);
-              sendPointsVisibilityChange(newVal);
-            }}
-          >
-            {pointsShown ? "Hide Points" : "Show Points"}
-          </Button>
-          <Button onClick={clearPoints}>Clear All Points</Button>
+          <Box py={4} m={"0 auto"} textAlign={"left"}>
+            <Button
+              onClick={() => {
+                const newVal = !pointsShown;
+                setPointsShown(newVal);
+                sendPointsVisibilityChange(newVal);
+              }}
+              my={2}
+            >
+              {pointsShown ? "Hide Points" : "Show Points"}
+            </Button>
+            <Button onClick={clearPoints} m={2}>
+              Clear All Points
+            </Button>
+          </Box>
         </Box>
       ) : (
         <form onSubmit={handleSubmit}>
@@ -158,6 +208,7 @@ const App = () => {
           <button type="submit">Submit</button>
         </form>
       )}
+      <Footer />
     </>
   );
 };
