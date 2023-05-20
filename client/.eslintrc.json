@@ -16,9 +16,10 @@
   },
   "plugins": ["react", "@typescript-eslint"],
   "rules": {
-    "indent": ["error", 4],
+    "indent": ["error", 2],
     "linebreak-style": ["error", "unix"],
     "quotes": ["error", "double"],
-    "semi": ["error", "always"]
+    "semi": ["error", "always"],
+    "react/react-in-jsx-scope": 0
   }
 }

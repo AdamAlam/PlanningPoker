@@ -6,13 +6,13 @@ const cors = require("cors");
 const PORT = 8080;
 
 const app = express();
-app.use(cors);
-
+app.use(cors());
 const usersMap = {};
+
+let pointsShown = false;
 
 const httpServer = http.createServer(app);
 const io = socketIo(httpServer, {
-  // TODO: Add correct origin
   cors: { origin: "*", methods: ["GET", "POST"] },
 });
 
@@ -20,8 +20,19 @@ app.get("/userData", (req, res) => {
   res.send(Object.values(usersMap));
 });
 
+app.get("/setUserName", (req, res) => {
+  res.cookie("userName", "user's name", { maxAge: 30 * 60 * 1000 });
+  res.send("User name is set in cookies");
+});
+
+const emitUserData = (socket) => {
+  const userValues = Array.from(Object.values(usersMap));
+  socket.broadcast.emit("receive_user_data_change", userValues);
+  socket.emit("receive_user_data_change", userValues);
+};
+
 io.on("connection", (socket) => {
-  console.log(`New client connected ${socket.id}}`);
+  console.log(`New client connected ${socket.id}`);
 
   socket.on("register", (name, points) => {
     console.log(`New user registered: ${name}`);
@@ -29,12 +40,9 @@ io.on("connection", (socket) => {
   });
 
   socket.on("readyForUpdates", () => {
-    console.log("received ready for updates");
-
-    const userValues = Array.from(Object.values(usersMap));
-    socket.broadcast.emit("receive_user_data_change", userValues);
-    socket.emit("receive_user_data_change", userValues);
-    console.log("Sent User Data", userValues);
+    console.log("Received ready for updates");
+    emitUserData(socket);
+    socket.emit("receive_points_visibility", pointsShown);
   });
 
   socket.on("sent_message", (data) => {
@@ -44,18 +52,22 @@ io.on("connection", (socket) => {
 
   socket.on("send_points_change", (newPoints) => {
     usersMap[socket.id] = { ...usersMap[socket.id], points: newPoints };
-    console.log(Object.values(usersMap));
-    socket.broadcast.emit("receive_user_data_change", Object.values(usersMap));
+    emitUserData(socket);
   });
 
   socket.on("change_points_shown", (data) => {
     console.log(`Received change to POINTS_SHOWN: ${data.pointsShown}`);
+    pointsShown = data.pointsShown;
     socket.broadcast.emit("change_all_points_visibility", data);
   });
 
+  // socket.on("get_points_visibility", () =>
+  //   socket.emit("receive_points_visibility", pointsShown)
+  // );
+
   socket.on("disconnect", () => {
     delete usersMap[socket.id];
-    console.log(`client disconnected ${socket.id}`);
+    console.log(`Client disconnected ${socket.id}`);
   });
 });
 

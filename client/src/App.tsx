@@ -1,14 +1,14 @@
-import { Button } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
-import { io } from "socket.io-client";
+import { Button, Input } from "@chakra-ui/react";
+import { useEffect, useRef, useState } from "react";
+import { io, Socket } from "socket.io-client";
 import "./App.css";
 import EstimationCards from "./components/EstimationCards/EstimationCards";
 import UserTable from "./components/UserTable/UserTable";
-import axios from "axios";
 
-const socket = io("http://localhost:8080");
+// const socket = io("http://localhost:8080");
 
 const App = () => {
+  const socketRef = useRef<Socket | null>(null);
   const [userName, setUserName] = useState<string>("");
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
   const [selectedPoints, setSelectedPoints] = useState<number | string>(0);
@@ -21,25 +21,59 @@ const App = () => {
   >([]);
 
   useEffect(() => {
-    socket.on("receive_user_data_change", (data) => {
-      console.log(`Received user data`, data);
-      setUserData(data);
-    });
-
-    socket.on("change_all_points_visibility", (data) =>
-      setPointsShown(data.pointsShown)
-    );
+    socketRef.current = io("http://localhost:8080");
 
     return () => {
-      socket.off("change_all_points_visibility");
-      socket.off("receive_user_data_change");
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+      }
+    };
+  }, []);
+
+  // Check session storage for a stored name when the app loads
+  useEffect(() => {
+    const storedName = sessionStorage.getItem("userName");
+    if (storedName) {
+      setUserName(storedName);
+      document.title = `Planning Poker - ${storedName}`;
+      setIsRegistered(true);
+      if (socketRef.current) {
+        socketRef.current.emit("register", storedName);
+        socketRef.current.emit("readyForUpdates");
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (socketRef.current) {
+      socketRef.current.on("receive_user_data_change", (data) => {
+        setUserData(data);
+      });
+
+      socketRef.current.on("receive_points_visibility", (data) => {
+        setPointsShown(data);
+      });
+
+      socketRef.current.on("change_all_points_visibility", (data) =>
+        setPointsShown(data.pointsShown)
+      );
+    }
+
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.off("change_all_points_visibility");
+        socketRef.current.off("receive_user_data-change");
+        socketRef.current.off("receive_points_visibility");
+      }
     };
   }, []);
 
   const sendMessage = () => {
-    socket.emit("sent_message", {
-      message: `The selected points on the other app is ${selectedPoints}`,
-    });
+    if (socketRef.current) {
+      socketRef.current.emit("sent_message", {
+        message: `The selected points on the other app is ${selectedPoints}`,
+      });
+    }
   };
 
   const handleNameChange = (e) => {
@@ -49,17 +83,27 @@ const App = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsRegistered(true);
-    socket.emit("register", userName);
-    socket.emit("readyForUpdates");
+
+    sessionStorage.setItem("userName", userName);
+    document.title = `Planning Poker - ${userName}`;
+
+    if (socketRef.current) {
+      socketRef.current.emit("register", userName);
+      socketRef.current.emit("readyForUpdates");
+    }
   };
 
   const sendPointsVisibilityChange = (newVisibility: boolean) => {
-    socket.emit("change_points_shown", { pointsShown: newVisibility });
+    if (socketRef.current) {
+      socketRef.current.emit("change_points_shown", {
+        pointsShown: newVisibility,
+      });
+    }
   };
 
   useEffect(() => {
-    if (isRegistered && userName.length > 0) {
-      socket.emit("send_points_change", selectedPoints);
+    if (isRegistered && userName.length > 0 && socketRef.current) {
+      socketRef.current.emit("send_points_change", selectedPoints);
     }
   }, [selectedPoints]);
 
@@ -85,13 +129,13 @@ const App = () => {
         <form onSubmit={handleSubmit}>
           <label>
             Please enter your name:
-            <input
-              type="text"
-              value={userName}
+            <Input
               onChange={handleNameChange}
+              placeholder="Enter your name"
               required
             />
           </label>
+          {/* //TODO: Change this to a Chakra Button */}
           <button type="submit">Submit</button>
         </form>
       )}
