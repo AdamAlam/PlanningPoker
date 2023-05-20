@@ -1,9 +1,10 @@
-import { Button, Input, useToast } from "@chakra-ui/react";
+import { Box, Button, Input, useToast, Text } from "@chakra-ui/react";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Socket, io } from "socket.io-client";
 import "./App.css";
 import EstimationCards from "./components/EstimationCards/EstimationCards";
 import UserTable from "./components/UserTable/UserTable";
+import PieChart from "./components/PieChart/PieChart";
 
 const App = () => {
   const socketRef = useRef<Socket | null>(null);
@@ -117,9 +118,20 @@ const App = () => {
   return (
     <>
       {isRegistered ? (
-        <div>
-          <h1>Welcome {userName}!</h1>
+        <Box
+          p={4}
+          alignItems="center"
+          justifyContent={"center"}
+          height={"100vh"}
+        >
+          <Text fontSize="5xl">Welcome {userName}!</Text>
+          {pointsShown && (
+            <Box w="30%" m={"0 auto"} p={10}>
+              <PieChart userData={userData} />
+            </Box>
+          )}
           <EstimationCards changeValue={setSelectedPoints} />
+
           <UserTable pointsShown={pointsShown} userData={userData} />
           <Button
             onClick={() => {
@@ -131,7 +143,7 @@ const App = () => {
             {pointsShown ? "Hide Points" : "Show Points"}
           </Button>
           <Button onClick={clearPoints}>Clear All Points</Button>
-        </div>
+        </Box>
       ) : (
         <form onSubmit={handleSubmit}>
           <label>
