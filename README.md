@@ -12,6 +12,8 @@ This is a real-time application designed to facilitate remote "Planning Poker" s
 
 ## Possible Features
 
+- [ ] Hovering over a points card gives an explanation or description about how much work that specific card is worth.
+
 - [ ] Ability for any connected user to add a link to the user story being discussed (from TFS) for self-reading.
 
   - [ ] After each story, implement a "New Story" button to point to the next story, prompting the user for a TFS link.

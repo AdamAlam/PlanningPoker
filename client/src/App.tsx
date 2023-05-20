@@ -1,4 +1,4 @@
-import { Box, Button, Input, Toast, useToast } from "@chakra-ui/react";
+import { Button, Input, useToast } from "@chakra-ui/react";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Socket, io } from "socket.io-client";
 import "./App.css";
