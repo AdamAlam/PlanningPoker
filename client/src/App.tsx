@@ -1,4 +1,4 @@
-import { Button, Input } from "@chakra-ui/react";
+import { Box, Button, Input, Toast, useToast } from "@chakra-ui/react";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Socket, io } from "socket.io-client";
 import "./App.css";
@@ -7,6 +7,7 @@ import UserTable from "./components/UserTable/UserTable";
 
 const App = () => {
   const socketRef = useRef<Socket | null>(null);
+  const toast = useToast();
   const [userName, setUserName] = useState<string>("");
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
   const [selectedPoints, setSelectedPoints] = useState<number | string>(0);
@@ -55,6 +56,15 @@ const App = () => {
       socketRef.current.on("change_all_points_visibility", (data) =>
         setPointsShown(data.pointsShown)
       );
+
+      socketRef.current.on("cleared_data", (name) =>
+        toast({
+          title: `Points have been cleared by ${name}.`,
+          status: "success",
+          duration: 6000,
+          isClosable: true,
+        })
+      );
     }
 
     return () => {
@@ -62,15 +72,14 @@ const App = () => {
         socketRef.current.off("change_all_points_visibility");
         socketRef.current.off("receive_user_data_change");
         socketRef.current.off("receive_points_visibility");
+        socketRef.current.off("cleared_data");
       }
     };
   }, []);
 
-  const sendMessage = () => {
+  const clearPoints = () => {
     if (socketRef.current) {
-      socketRef.current.emit("sent_message", {
-        message: `The selected points on the other app is ${selectedPoints}`,
-      });
+      socketRef.current.emit("clear_points");
     }
   };
 
@@ -121,7 +130,7 @@ const App = () => {
           >
             {pointsShown ? "Hide Points" : "Show Points"}
           </Button>
-          <Button onClick={sendMessage}>Send Hello</Button>
+          <Button onClick={clearPoints}>Clear All Points</Button>
         </div>
       ) : (
         <form onSubmit={handleSubmit}>

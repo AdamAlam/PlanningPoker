@@ -65,6 +65,14 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("change_all_points_visibility", data);
   });
 
+  socket.on("clear_points", () => {
+    Object.keys(usersMap).forEach(
+      (key) => (usersMap[key]["points"] = undefined)
+    );
+    emitUserData(socket);
+    io.emit("cleared_data", usersMap[socket.id]["name"]);
+  });
+
   socket.on("disconnect", () => {
     delete usersMap[socket.id];
     console.log(`Client disconnected ${socket.id}`);
