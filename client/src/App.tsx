@@ -5,8 +5,6 @@ import "./App.css";
 import EstimationCards from "./components/EstimationCards/EstimationCards";
 import UserTable from "./components/UserTable/UserTable";
 
-// const socket = io("http://localhost:8080");
-
 const App = () => {
   const socketRef = useRef<Socket | null>(null);
   const [userName, setUserName] = useState<string>("");
@@ -62,7 +60,7 @@ const App = () => {
     return () => {
       if (socketRef.current) {
         socketRef.current.off("change_all_points_visibility");
-        socketRef.current.off("receive_user_data-change");
+        socketRef.current.off("receive_user_data_change");
         socketRef.current.off("receive_points_visibility");
       }
     };

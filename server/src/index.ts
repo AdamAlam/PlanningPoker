@@ -13,14 +13,18 @@ let pointsShown = false;
 
 const httpServer = http.createServer(app);
 const io = socketIo(httpServer, {
-  cors: { origin: "*", methods: ["GET", "POST"] },
+  cors: {
+    origin: ["http://127.0.0.1:5173", "http://localhost:5173"],
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
 });
 
 app.get("/userData", (req, res) => {
   res.send(Object.values(usersMap));
 });
 
-app.get("/setUserName", (req, res) => {
+app.get("/users", (req, res) => {
   res.cookie("userName", "user's name", { maxAge: 30 * 60 * 1000 });
   res.send("User name is set in cookies");
 });
