@@ -61,10 +61,6 @@ io.on("connection", (socket) => {
     socket.broadcast.emit("change_all_points_visibility", data);
   });
 
-  // socket.on("get_points_visibility", () =>
-  //   socket.emit("receive_points_visibility", pointsShown)
-  // );
-
   socket.on("disconnect", () => {
     delete usersMap[socket.id];
     console.log(`Client disconnected ${socket.id}`);

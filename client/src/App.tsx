@@ -1,6 +1,6 @@
 import { Button, Input } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
-import { io, Socket } from "socket.io-client";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { Socket, io } from "socket.io-client";
 import "./App.css";
 import EstimationCards from "./components/EstimationCards/EstimationCards";
 import UserTable from "./components/UserTable/UserTable";
@@ -76,11 +76,11 @@ const App = () => {
     }
   };
 
-  const handleNameChange = (e) => {
+  const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setUserName(e.target.value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
     setIsRegistered(true);
 
