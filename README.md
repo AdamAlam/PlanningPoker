@@ -24,7 +24,7 @@ This is a real-time application designed to facilitate remote "Planning Poker" s
 
 - [ ] Ability to select name from a dropdown, making the app team-specific. This will make the `Edit name` functionality obsolete.
 
-- [ ] Implement a pie chart to display average, median, mode, low, and high estimates.
+- [x] Implement a pie chart to display average, median, mode, low, and high estimates.
 
   - [ ] Add functionality to hover over the pie chart and show which users selected which value.
   - [-] The pie chart should have some Chakra transition such as [slide fade](https://chakra-ui.com/docs/components/transitions/usage) when values are revealed.
@@ -32,7 +32,7 @@ This is a real-time application designed to facilitate remote "Planning Poker" s
 
 - [ ] Show user selection history for a specific user story.
 
-- [ ] Add password authentication so that only people with the password can join (Simpe authentication, no hashing required).
+- [x] Add password authentication so that only people with the password can join (Simpe authentication, no hashing required).
 
 ## Setup and Installation
 
