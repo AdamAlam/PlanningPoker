@@ -3,6 +3,7 @@ import {
   Button,
   ButtonGroup,
   Fade,
+  Heading,
   Image,
   Input,
   Text,
@@ -270,7 +271,14 @@ const App = () => {
             </Box>{" "}
           </>
         ) : (
-          <Box width="100%" my="50%">
+          <Box
+            width="100%"
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            mt="20px"
+          >
+            <Heading mb="2rem">Planning Poker Login</Heading>
             <form onSubmit={handleSubmit}>
               <Box marginBottom="1rem">
                 <label>
@@ -284,7 +292,7 @@ const App = () => {
               </Box>
               <Box marginBottom="1rem">
                 <label>
-                  Please Enter the Password:
+                  Please enter the password:
                   <Input
                     onChange={handlePasswordChange}
                     placeholder="Enter Password"
