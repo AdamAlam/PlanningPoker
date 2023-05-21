@@ -3,6 +3,7 @@ import {
   Button,
   ButtonGroup,
   Fade,
+  Image,
   Input,
   Text,
   useToast,
@@ -192,6 +193,7 @@ const App = () => {
         justifyContent="center"
         width="60%"
         mx="auto"
+        flex="1 0 auto"
       >
         {isRegistered ? (
           <>
@@ -200,7 +202,7 @@ const App = () => {
               justifyContent="space-between"
               alignItems="center"
             >
-              <Text fontSize="5xl">Welcome, {userName}!</Text>
+              <Text fontSize="4xl">Welcome, {userName}!</Text>
               <ButtonGroup>
                 <Button onClick={() => setModalOpen(true)}>
                   Edit Display Name
@@ -239,7 +241,14 @@ const App = () => {
                   )}
                 </Fade>
               ) : (
-                <p>TODO: Figure out what to add here.</p>
+                <>
+                  <Image
+                    src="/CardLoading.svg"
+                    alt="points-hidden"
+                    w="90%"
+                    maxW="400px"
+                  />
+                </>
               )}
             </Box>
             <EstimationCards changeValue={setSelectedPoints} />
