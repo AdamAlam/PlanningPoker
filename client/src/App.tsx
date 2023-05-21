@@ -79,7 +79,9 @@ const App = () => {
   };
 
   useEffect(() => {
-    socketRef.current = io("http://localhost:8080");
+    socketRef.current = io(
+      `${import.meta.env.VITE_BACKEND_IP}:${import.meta.env.VITE_BACKEND_PORT}`
+    );
 
     return () => {
       if (socketRef.current) {
