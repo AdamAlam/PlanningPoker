@@ -55,7 +55,7 @@ const PieChart = ({ userData }: Props) => {
         <Pie data={data} />
       ) : (
         // TODO: Add some kind of animation here when no one has selected any data.
-        <Text fontSize={"4xl"} m={"0 auto"} textAlign={"center"}>
+        <Text fontSize="4xl" m="0 auto" textAlign="center">
           Awaiting Data...
         </Text>
       )}

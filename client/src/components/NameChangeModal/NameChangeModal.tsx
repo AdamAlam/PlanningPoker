@@ -18,6 +18,7 @@ interface NameChangeModalProps {
   setModalClose: (newVal: boolean) => void;
   sendNewName: (newName: string) => void;
   emitData: (newName: string) => void;
+  oldName: string;
 }
 
 const NameChangeModal = ({
@@ -25,11 +26,28 @@ const NameChangeModal = ({
   setModalClose,
   sendNewName,
   emitData,
+  oldName,
 }: NameChangeModalProps) => {
   const initialRef = React.useRef(null);
   const finalRef = React.useRef(null);
 
   const [newName, setNewName] = useState<string>("");
+
+  const submitModal = () => {
+    if (newName.length > 0 && newName !== oldName) {
+      sendNewName(newName);
+      emitData(newName);
+      setModalClose(false);
+    }
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      submitModal();
+    }
+  };
+
   return (
     <>
       <Modal
@@ -49,19 +67,16 @@ const NameChangeModal = ({
                 ref={initialRef}
                 placeholder="First name"
                 onChange={(e) => setNewName(e.target.value)}
+                onKeyDown={handleKeyDown}
               />
             </ModalBody>
             <ModalFooter>
               <Button
                 colorScheme="blue"
                 mr={3}
-                disabled={newName.length < 1}
+                disabled={newName.length === 0}
                 type="submit"
-                onClick={() => {
-                  sendNewName(newName);
-                  emitData(newName);
-                  setModalClose(false);
-                }}
+                onClick={submitModal}
               >
                 Save
               </Button>

@@ -1,11 +1,13 @@
 import {
   Box,
   Button,
+  ButtonGroup,
+  Fade,
   Input,
-  SlideFade,
   Text,
   useToast,
 } from "@chakra-ui/react";
+import _ from "lodash";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Socket, io } from "socket.io-client";
 import "./App.css";
@@ -29,6 +31,50 @@ const App = () => {
     }[]
   >([]);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [password, setPassword] = useState<string>("");
+
+  const [userDataSummary, setUserDataSummary] = useState<{
+    mean: number;
+    mode: number | undefined;
+    median: number;
+    valid: boolean;
+  }>({ mean: 0, mode: 0, median: 0, valid: false });
+
+  useEffect(() => {
+    const points: Array<number | undefined> = userData
+      .map((value) => {
+        if (value.points && typeof value.points === "number") {
+          return value.points;
+        }
+      })
+      .filter((point) => point !== undefined && point != 0);
+
+    const findMode = (
+      numbers: Array<number | undefined>
+    ): number | undefined => {
+      if (numbers.length === 0) return undefined;
+
+      const counts = _.countBy(numbers);
+      const mostFrequent = _.maxBy(Object.keys(counts), (key) => counts[key]);
+
+      return mostFrequent !== undefined ? Number(mostFrequent) : undefined;
+    };
+
+    const mean = _.round(_.mean(points), 2);
+    const mode = findMode(points);
+
+    setUserDataSummary({
+      mean: mean,
+      mode: mode,
+      median: 0,
+      valid: !!(mean && mode),
+    });
+  }, [userData]);
+
+  const handleLogout = () => {
+    setIsRegistered(false);
+    sessionStorage.removeItem("userName");
+  };
 
   useEffect(() => {
     socketRef.current = io("http://localhost:8080");
@@ -40,7 +86,6 @@ const App = () => {
     };
   }, []);
 
-  // Check session storage for a stored name when the app loads
   useEffect(() => {
     const storedName = sessionStorage.getItem("userName");
     if (storedName) {
@@ -106,16 +151,22 @@ const App = () => {
     setUserName(e.target.value);
   };
 
+  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  };
+
   const handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    setIsRegistered(true);
+    if (password === "asgaev") {
+      setIsRegistered(true);
 
-    sessionStorage.setItem("userName", userName);
-    document.title = `Planning Poker - ${userName}`;
+      sessionStorage.setItem("userName", userName);
+      document.title = `Planning Poker - ${userName}`;
 
-    if (socketRef.current) {
-      socketRef.current.emit("register", userName);
-      socketRef.current.emit("readyForUpdates");
+      if (socketRef.current) {
+        socketRef.current.emit("register", userName);
+        socketRef.current.emit("readyForUpdates");
+      }
     }
   };
 
@@ -134,82 +185,121 @@ const App = () => {
   }, [selectedPoints]);
 
   return (
-    <>
-      {isRegistered ? (
-        <Box
-          p={4}
-          alignItems="center"
-          justifyContent={"center"}
-          height={"100vh"}
-          width="70%"
-          mx={"auto"}
-        >
-          <Box
-            display={"flex"}
-            justifyContent={"space-between"}
-            alignItems="center"
-          >
-            <Text fontSize="5xl">Welcome, {userName}!</Text>
-            <Button onClick={() => setModalOpen(true)}>
-              Edit Display Name
-            </Button>
-          </Box>
-
-          <NameChangeModal
-            modalIsOpen={modalOpen}
-            setModalClose={setModalOpen}
-            sendNewName={setUserName}
-            emitData={changeDisplayName}
-          />
-          <SlideFade in={pointsShown}>
+    <Box display="flex" flexDirection="column" minHeight="100vh">
+      <Box
+        p={4}
+        alignItems="center"
+        justifyContent="center"
+        width="60%"
+        mx="auto"
+      >
+        {isRegistered ? (
+          <>
             <Box
-              minWidth="20vw"
-              w={"20%"}
-              h={"20%"}
-              mx={"auto"}
-              p={8}
-              minH={"20vh"}
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
             >
-              {/* <SlideFade in={pointsShown}> */}
-              {pointsShown && <PieChart userData={userData} />}
-              {/* </SlideFade> */}
+              <Text fontSize="5xl">Welcome, {userName}!</Text>
+              <ButtonGroup>
+                <Button onClick={() => setModalOpen(true)}>
+                  Edit Display Name
+                </Button>
+                <Button colorScheme="red" onClick={handleLogout}>
+                  Logout
+                </Button>
+              </ButtonGroup>
             </Box>
-          </SlideFade>
-          <EstimationCards changeValue={setSelectedPoints} />
-
-          <UserTable pointsShown={pointsShown} userData={userData} />
-          <Box py={4} m={"0 auto"} textAlign={"left"}>
-            <Button
-              onClick={() => {
-                const newVal = !pointsShown;
-                setPointsShown(newVal);
-                sendPointsVisibilityChange(newVal);
-              }}
-              my={2}
-            >
-              {pointsShown ? "Hide Points" : "Show Points"}
-            </Button>
-            <Button onClick={clearPoints} m={2}>
-              Clear All Points
-            </Button>
-          </Box>
-        </Box>
-      ) : (
-        <form onSubmit={handleSubmit}>
-          <label>
-            Please enter your name:
-            <Input
-              onChange={handleNameChange}
-              placeholder="Enter your name"
-              required
+            <NameChangeModal
+              modalIsOpen={modalOpen}
+              setModalClose={setModalOpen}
+              sendNewName={setUserName}
+              emitData={changeDisplayName}
+              oldName={userName}
             />
-          </label>
-          {/* //TODO: Change this to a Chakra Button */}
-          <button type="submit">Submit</button>
-        </form>
-      )}
-      <Footer />
-    </>
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              minWidth="400px"
+              minHeight="400px"
+              height="20%"
+              mx="auto"
+              my="auto"
+            >
+              {pointsShown ? (
+                <Fade in={pointsShown}>
+                  <PieChart userData={userData} />
+                  {userDataSummary.valid && (
+                    <Text pt={10} fontSize="3xl">
+                      Mean: {userDataSummary.mean}
+                      {" | "}Mode:
+                      {userDataSummary.mode}
+                    </Text>
+                  )}
+                </Fade>
+              ) : (
+                <p>TODO: Figure out what to add here.</p>
+              )}
+            </Box>
+            <EstimationCards changeValue={setSelectedPoints} />
+            <UserTable pointsShown={pointsShown} userData={userData} />
+            <Box py={4} m="0 auto" textAlign="left">
+              <Button
+                onClick={() => {
+                  const newVal = !pointsShown;
+                  setPointsShown(newVal);
+                  sendPointsVisibilityChange(newVal);
+                }}
+                my={2}
+              >
+                {pointsShown ? "Hide Points" : "Show Points"}
+              </Button>
+              <Button onClick={clearPoints} m={2}>
+                Clear All Points
+              </Button>
+            </Box>{" "}
+          </>
+        ) : (
+          <Box width="100%" my="50%">
+            <form onSubmit={handleSubmit}>
+              <Box marginBottom="1rem">
+                <label>
+                  Please enter your name:
+                  <Input
+                    onChange={handleNameChange}
+                    placeholder="Enter your name"
+                    required
+                  />
+                </label>
+              </Box>
+              <Box marginBottom="1rem">
+                <label>
+                  Please Enter the Password:
+                  <Input
+                    onChange={handlePasswordChange}
+                    placeholder="Enter Password"
+                    required
+                    type="password"
+                  />
+                </label>
+              </Box>
+              <Button type="submit" width="100%">
+                Submit
+              </Button>
+            </form>
+          </Box>
+        )}
+      </Box>
+      <Box
+        position="relative"
+        width="100%"
+        display={{ base: "none", md: "block" }}
+        flexShrink={0}
+      >
+        <Footer />
+      </Box>
+    </Box>
   );
 };
 

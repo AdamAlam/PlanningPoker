@@ -65,7 +65,8 @@ io.on("connection", (socket) => {
   });
 
   socket.on("change_display_name", (newName) => {
-    usersMap[socket.id]["name"] = newName;
+    // usersMap[socket.id]["name"] = newName;
+    usersMap[socket.id] = { ...usersMap[socket.id], name: newName };
     emitUserData(socket);
   });
 
