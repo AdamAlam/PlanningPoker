@@ -25,9 +25,6 @@ jobs:
           VITE_BACKEND_IP: ${{ vars.VITE_BACKEND_IP }}
           VITE_BACKEND_PORT: ${{ vars.VITE_BACKEND_PORT }}
 
-      - name: Print Variables
-        run: echo "$VITE_BACKEND_IP"
-
       - name: Upload production-ready build files
         uses: actions/upload-artifact@v2
         with:

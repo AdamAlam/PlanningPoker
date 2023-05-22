@@ -13,6 +13,7 @@ import _ from "lodash";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { Socket, io } from "socket.io-client";
 import "./App.css";
+import cardLoading from "./assets/CardLoading.svg";
 import EstimationCards from "./components/EstimationCards/EstimationCards";
 import Footer from "./components/Footer/Footer";
 import NameChangeModal from "./components/NameChangeModal/NameChangeModal";
@@ -80,7 +81,8 @@ const App = () => {
 
   useEffect(() => {
     socketRef.current = io(
-      `${import.meta.env.VITE_BACKEND_IP}:${import.meta.env.VITE_BACKEND_PORT}`
+      `${import.meta.env.VITE_BACKEND_IP}:${import.meta.env.VITE_BACKEND_PORT}`,
+      { secure: true, rejectUnauthorized: false }
     );
 
     return () => {
@@ -246,7 +248,7 @@ const App = () => {
               ) : (
                 <>
                   <Image
-                    src="/CardLoading.svg"
+                    src={cardLoading}
                     alt="points-hidden"
                     w="90%"
                     maxW="400px"
