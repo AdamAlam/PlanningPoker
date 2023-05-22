@@ -96,8 +96,7 @@ const App = () => {
     }
   }, []);
 
-  /**
-   * Socket listeners
+  /** Socket listeners
    *
    * Receives change in user data
    * Receives points visibility status
