@@ -19,30 +19,24 @@ import Footer from "./components/Footer/Footer";
 import NameChangeModal from "./components/NameChangeModal/NameChangeModal";
 import PieChart from "./components/PieChart/PieChart";
 import UserTable from "./components/UserTable/UserTable";
+import { UserDataSummary, UserData } from "./CommonTypes";
+import { defaultUserData } from "./CommonDefaults";
 
 const App = () => {
   const socketRef = useRef<Socket | null>(null);
-  const toast = useToast();
   const [userName, setUserName] = useState<string>("");
   const [isRegistered, setIsRegistered] = useState<boolean>(false);
   const [selectedPoints, setSelectedPoints] = useState<number | string>(0);
   const [pointsShown, setPointsShown] = useState<boolean>(false);
-  const [userData, setUserData] = useState<
-    {
-      name: string;
-      points?: string | number;
-    }[]
-  >([]);
+  const [userData, setUserData] = useState<Array<UserData>>([]);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [password, setPassword] = useState<string>("");
+  const [userDataSummary, setUserDataSummary] =
+    useState<UserDataSummary>(defaultUserData);
 
-  const [userDataSummary, setUserDataSummary] = useState<{
-    mean: number;
-    mode: number | undefined;
-    median: number;
-    valid: boolean;
-  }>({ mean: 0, mode: 0, median: 0, valid: false });
+  const toast = useToast();
 
+  /** WIP: Calculates Data Summary on {@link userData} change */
   useEffect(() => {
     const points: Array<number | undefined> = userData
       .map((value) => {
@@ -74,11 +68,7 @@ const App = () => {
     });
   }, [userData]);
 
-  const handleLogout = () => {
-    setIsRegistered(false);
-    sessionStorage.removeItem("userName");
-  };
-
+  /** Handles connection and disconnection from socket */
   useEffect(() => {
     socketRef.current = io(
       `${import.meta.env.VITE_BACKEND_IP}:${import.meta.env.VITE_BACKEND_PORT}`,
@@ -92,6 +82,7 @@ const App = () => {
     };
   }, []);
 
+  /** Checks if user has been registered to bypass registratiom */
   useEffect(() => {
     const storedName = sessionStorage.getItem("userName");
     if (storedName) {
@@ -105,6 +96,14 @@ const App = () => {
     }
   }, []);
 
+  /**
+   * Socket listeners
+   *
+   * Receives change in user data
+   * Receives points visibility status
+   * Receives change in points visibility
+   * Receives data clear
+   */
   useEffect(() => {
     if (socketRef.current) {
       socketRef.current.on("receive_user_data_change", (data) => {
@@ -129,6 +128,7 @@ const App = () => {
       );
     }
 
+    /** Turns off listeners */
     return () => {
       if (socketRef.current) {
         socketRef.current.off("change_all_points_visibility");
@@ -139,6 +139,19 @@ const App = () => {
     };
   }, []);
 
+  /** Sends info to backend when the client's selected points change */
+  useEffect(() => {
+    if (isRegistered && userName.length > 0 && socketRef.current) {
+      socketRef.current.emit("send_points_change", selectedPoints);
+    }
+  }, [selectedPoints]);
+
+  /** Client display name change handler
+   *
+   * Sends command to backend to change display name of current user
+   * Changes name in session storage
+   * Changes document title to display name
+   */
   const changeDisplayName = (newName: string) => {
     if (socketRef.current) {
       socketRef.current.emit("change_display_name", newName);
@@ -147,22 +160,35 @@ const App = () => {
     }
   };
 
+  /** Clear points for all users handler
+   *
+   * Sends command to backend to clear all points for all users
+   */
   const clearPoints = () => {
     if (socketRef.current) {
       socketRef.current.emit("clear_points");
     }
   };
 
+  /** Client input name change handler */
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setUserName(e.target.value);
   };
 
+  /** Client input password change handler */
   const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
   };
 
+  /** Submit handler for registration/login
+   *
+   * Sends command to backend to add new user
+   * Sends command to backend to allow new data
+   */
   const handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
+    // * * You do not need to tell me that this is insecure. I am aware 😂
+    // * * The repo is public so anyone can see this if they look for it
     if (password === "asgaev") {
       setIsRegistered(true);
 
@@ -176,6 +202,11 @@ const App = () => {
     }
   };
 
+  /** Points visibility change handler
+   *
+   * Sends command to backend to change points visibility for
+   *  all users
+   */
   const sendPointsVisibilityChange = (newVisibility: boolean) => {
     if (socketRef.current) {
       socketRef.current.emit("change_points_shown", {
@@ -184,11 +215,14 @@ const App = () => {
     }
   };
 
-  useEffect(() => {
-    if (isRegistered && userName.length > 0 && socketRef.current) {
-      socketRef.current.emit("send_points_change", selectedPoints);
-    }
-  }, [selectedPoints]);
+  /** Logout handler
+   *
+   * Deletes username from session storage
+   */
+  const handleLogout = () => {
+    setIsRegistered(false);
+    sessionStorage.removeItem("userName");
+  };
 
   return (
     <Box display="flex" flexDirection="column" minHeight="100vh">

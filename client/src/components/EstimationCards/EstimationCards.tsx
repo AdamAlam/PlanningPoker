@@ -2,10 +2,10 @@ import { Box, Card, CardBody, Flex, Text } from "@chakra-ui/react";
 
 import "./EstimationCards.css";
 
-interface Props {
+interface EstimationCardProps {
   changeValue: (newValue: number | string) => void;
 }
-const EstimationCards = ({ changeValue }: Props) => {
+const EstimationCards = ({ changeValue }: EstimationCardProps) => {
   const possibleValues: Array<number | string> = [
     0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100,
   ];
