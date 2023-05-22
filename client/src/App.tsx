@@ -82,7 +82,7 @@ const App = () => {
     };
   }, []);
 
-  /** Checks if user has been registered to bypass registratiom */
+  /** Checks if user has already been registered to bypass registratiom */
   useEffect(() => {
     const storedName = sessionStorage.getItem("userName");
     if (storedName) {
