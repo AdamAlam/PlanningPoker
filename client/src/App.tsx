@@ -271,7 +271,7 @@ const App = () => {
                 <Fade in={pointsShown}>
                   <PieChart userData={userData} />
                   {userDataSummary.valid && (
-                    <Text pt={10} fontSize="3xl">
+                    <Text pt={10} fontSize="3xl" textAlign="center">
                       Mean: {userDataSummary.mean}
                       {" | "}Mode:
                       {userDataSummary.mode}
