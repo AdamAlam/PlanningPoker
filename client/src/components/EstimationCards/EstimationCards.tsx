@@ -2,7 +2,7 @@ import { Box, Card, CardBody, Flex, Text } from "@chakra-ui/react";
 
 interface EstimationCardProps {
   changeValue: (newValue: number | string) => void;
-  selectedValue: number;
+  selectedValue: number | string;
 }
 const EstimationCards = ({
   changeValue,
