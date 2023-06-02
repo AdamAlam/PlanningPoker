@@ -117,14 +117,15 @@ const App = () => {
         setPointsShown(data.pointsShown)
       );
 
-      socketRef.current.on("cleared_data", (name) =>
-        toast({
+      socketRef.current.on("cleared_data", (name) => {
+        setSelectedPoints(0);
+        return toast({
           title: `Points have been cleared by ${name}.`,
           status: "success",
           duration: 6000,
           isClosable: true,
-        })
-      );
+        });
+      });
     }
 
     /** Turns off listeners */
