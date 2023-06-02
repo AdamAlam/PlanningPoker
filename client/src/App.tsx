@@ -286,10 +286,14 @@ const App = () => {
                     w="90%"
                     maxW="400px"
                   />
+                  <br />
                 </>
               )}
             </Box>
-            <EstimationCards changeValue={setSelectedPoints} />
+            <EstimationCards
+              changeValue={setSelectedPoints}
+              selectedValue={selectedPoints}
+            />
             <UserTable pointsShown={pointsShown} userData={userData} />
             <Box py={4} m="0 auto" textAlign="left">
               <Button

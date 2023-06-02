@@ -4,8 +4,12 @@ import "./EstimationCards.css";
 
 interface EstimationCardProps {
   changeValue: (newValue: number | string) => void;
+  selectedValue: number;
 }
-const EstimationCards = ({ changeValue }: EstimationCardProps) => {
+const EstimationCards = ({
+  changeValue,
+  selectedValue,
+}: EstimationCardProps) => {
   const possibleValues: Array<number | string> = [
     0, 0.5, 1, 2, 3, 5, 8, 13, 20, 40, 100,
   ];
@@ -18,7 +22,19 @@ const EstimationCards = ({ changeValue }: EstimationCardProps) => {
           onClick={() => changeValue(value)}
           key={value}
         >
-          <Card className="point-card">
+          <Card
+            className="point-card"
+            bg={value === selectedValue ? "#ffcfd2" : "#ffffff"}
+            border={
+              value === selectedValue
+                ? "2px solid #faaaaf"
+                : "2px solid rgba(255,255,255, 0)"
+            }
+            _hover={{
+              background: value === selectedValue ? "#faaaaf" : "#dbdbdb",
+              cursor: "pointer",
+            }}
+          >
             <CardBody textAlign="center">
               <Text fontSize="4xl">{value}</Text>
             </CardBody>
