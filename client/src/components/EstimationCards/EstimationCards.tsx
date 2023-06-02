@@ -1,7 +1,5 @@
 import { Box, Card, CardBody, Flex, Text } from "@chakra-ui/react";
 
-import "./EstimationCards.css";
-
 interface EstimationCardProps {
   changeValue: (newValue: number | string) => void;
   selectedValue: number;
