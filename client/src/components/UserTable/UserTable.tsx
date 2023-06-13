@@ -21,7 +21,7 @@ const UserTable = ({ userData, pointsShown = false }: UserTableProps) => (
     <Table variant="simple">
       <Thead>
         <Tr>
-          <Th>Name</Th>
+          <Th minW="30%">Name</Th>
           <Th>Estimated Points</Th>
         </Tr>
       </Thead>
@@ -31,7 +31,11 @@ const UserTable = ({ userData, pointsShown = false }: UserTableProps) => (
             <Tr key={user.name}>
               <Td>{user.name}</Td>
               <Td>
-                {pointsShown ? user.points || <Spinner size={"sm"} /> : "🤫"}
+                {pointsShown
+                  ? user.points || <Spinner size="sm" />
+                  : user.points
+                  ? "✅"
+                  : "❌"}
               </Td>
             </Tr>
           ))}
