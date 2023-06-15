@@ -21,6 +21,7 @@ import PieChart from "./components/PieChart/PieChart";
 import UserTable from "./components/UserTable/UserTable";
 import { UserDataSummary, UserData } from "./CommonTypes";
 import { defaultUserData } from "./CommonDefaults";
+import NameDropdown from "./components/NameDropdown/NameDropdown";
 
 const App = () => {
   const socketRef = useRef<Socket | null>(null);
@@ -325,11 +326,12 @@ const App = () => {
               <Box marginBottom="1rem">
                 <label>
                   Please enter your name:
-                  <Input
+                  {/* <Input
                     onChange={handleNameChange}
                     placeholder="Enter your name"
                     required
-                  />
+                  /> */}
+                  <NameDropdown onChange={handleNameChange} />
                 </label>
               </Box>
               <Box marginBottom="1rem">
