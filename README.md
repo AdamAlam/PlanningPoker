@@ -84,6 +84,7 @@ This application uses the following technologies:
 
 - Frontend: React.js with Chakra UI for component styling
 - Backend: Express.js with socket.io for real-time communication
+- The application is deployed on github pages for the frontend and a digital ocean droplet for the backend.
 
 ### Contributing
 
