@@ -22,7 +22,7 @@ This is a real-time application designed to facilitate remote "Planning Poker" s
 
 - [x] Edit display name.
 
-- [ ] Ability to select name from a dropdown, making the app team-specific. This will make the `Edit name` functionality obsolete.
+- [x] Ability to select name from a dropdown, making the app team-specific. This will make the `Edit name` functionality obsolete.
 
 - [x] Implement a pie chart to display average, median, mode, low, and high estimates.
 
