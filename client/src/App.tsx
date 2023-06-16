@@ -339,7 +339,11 @@ const App = () => {
                   />
                 </label>
               </Box>
-              <Button type="submit" width="100%">
+              <Button
+                type="submit"
+                width="100%"
+                isDisabled={!userName || !password}
+              >
                 Submit
               </Button>
             </form>
