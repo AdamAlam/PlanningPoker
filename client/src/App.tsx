@@ -188,9 +188,8 @@ const App = () => {
    */
   const handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    // * * You do not need to tell me that this is insecure. I am aware 😂
-    // * * The repo is public so anyone can see this if they look for it
-    if (password === "asgaev") {
+    // * * You do not need to tell me that this is insecure. I am aware
+    if (password === import.meta.env.VITE_PASSWORD) {
       setIsRegistered(true);
 
       sessionStorage.setItem("userName", userName);
@@ -325,12 +324,7 @@ const App = () => {
             <form onSubmit={handleSubmit}>
               <Box marginBottom="1rem">
                 <label>
-                  Please enter your name:
-                  {/* <Input
-                    onChange={handleNameChange}
-                    placeholder="Enter your name"
-                    required
-                  /> */}
+                  Please select your name:
                   <NameDropdown onChange={handleNameChange} />
                 </label>
               </Box>

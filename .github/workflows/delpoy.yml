@@ -25,6 +25,7 @@ jobs:
           VITE_BACKEND_IP: ${{ vars.VITE_BACKEND_IP }}
           VITE_BACKEND_PORT: ${{ vars.VITE_BACKEND_PORT }}
           VITE_ALL_NAMES: ${{ vars.VITE_ALL_NAMES }}
+          VITE_PASSWORD: ${{ vars.VITE_PASSWORD }}
 
       - name: Upload production-ready build files
         uses: actions/upload-artifact@v2
